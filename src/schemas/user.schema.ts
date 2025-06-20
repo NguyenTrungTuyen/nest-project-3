@@ -93,8 +93,6 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User)
 
-// Indexes
-UserSchema.index({ username: 1 })
-UserSchema.index({ email: 1 })
+// Chỉ sử dụng schema.index() thay vì cả unique: true và schema.index()
 UserSchema.index({ role: 1 })
 UserSchema.index({ fullName: "text", username: "text", email: "text" })

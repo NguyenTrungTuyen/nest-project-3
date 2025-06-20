@@ -18,8 +18,8 @@ import type { CreateUserDto } from "./dto/create-user.dto"
 import type { UpdateUserDto, UpdateUserProfileDto } from "./dto/update-user.dto"
 import { UserResponseDto } from "./dto/user-responsive.dto"
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard"
-import { RolesGuard } from "../auth/guards/role.gruad"
-import { Roles } from "../auth/decorators/roles.decorator"
+import { RolesGuard } from "../auth/guards/roles.gruad"
+import { Roles } from "../auth/decorators/role.decorator"
 
 @ApiTags("Users")
 @Controller("users")

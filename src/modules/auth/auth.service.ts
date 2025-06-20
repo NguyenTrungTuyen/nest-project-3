@@ -42,7 +42,7 @@ export class AuthService {
       const userData = {
         ...registerDto,
         password: hashedPassword,
-        role: LIBRARY_CONSTANTS.USER_ROLES.MEMBER, // Force role = member cho đăng ký công khai
+        role: LIBRARY_CONSTANTS.USER_ROLES.MEMBER,
         borrowedBooks: [],
         fines: 0,
         isActive: true,
@@ -51,9 +51,9 @@ export class AuthService {
       const createdUser = new this.userModel(userData)
       const savedUser = await createdUser.save()
 
-      // Tạo JWT token (tùy chọn - có thể tự động đăng nhập sau khi đăng ký)
+      // Tạo JWT token
       const payload = {
-        sub: savedUser._id.toString(),
+        sub: (savedUser._id as any).toString(),
         username: savedUser.username,
         role: savedUser.role,
       }
@@ -62,13 +62,13 @@ export class AuthService {
       return {
         message: "Đăng ký thành công",
         user: {
-          id: savedUser._id.toString(),
+          id: (savedUser._id as any).toString(),
           username: savedUser.username,
           email: savedUser.email,
           fullName: savedUser.fullName,
           role: savedUser.role,
         },
-        access_token, // Tự động đăng nhập
+        access_token,
       }
     } catch (error) {
       if (error instanceof ConflictException) {
@@ -103,7 +103,7 @@ export class AuthService {
 
     // Tạo JWT token
     const payload = {
-      sub: user._id.toString(),
+      sub: (user._id as any).toString(),
       username: user.username,
       role: user.role,
       email: user.email,
@@ -114,7 +114,7 @@ export class AuthService {
     return {
       access_token,
       user: {
-        id: user._id.toString(),
+        id: (user._id as any).toString(),
         username: user.username,
         email: user.email,
         fullName: user.fullName,
@@ -137,19 +137,18 @@ export class AuthService {
     return null
   }
 
-  async findUserById(id: string): Promise<UserDocument> {
+  async findUserById(id: string): Promise<UserDocument | null> {
     return await this.userModel.findById(id).exec()
   }
 
-  async findUserByUsername(username: string): Promise<UserDocument> {
+  async findUserByUsername(username: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ username }).exec()
   }
 
-  async findUserByEmail(email: string): Promise<UserDocument> {
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ email }).exec()
   }
 
-  // Utility method để verify JWT token
   async verifyToken(token: string): Promise<any> {
     try {
       return this.jwtService.verify(token)
@@ -158,7 +157,6 @@ export class AuthService {
     }
   }
 
-  // Method để refresh token (nếu cần)
   async refreshToken(userId: string): Promise<{ access_token: string }> {
     const user = await this.userModel.findById(userId).exec()
     if (!user || !user.isActive) {
@@ -166,7 +164,7 @@ export class AuthService {
     }
 
     const payload = {
-      sub: user._id.toString(),
+      sub: (user._id as any).toString(),
       username: user.username,
       role: user.role,
       email: user.email,

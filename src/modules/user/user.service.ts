@@ -15,6 +15,30 @@ export class UserService {
     this.userModel = userModel
   }
 
+  private transformUserToResponse(user: any): UserResponseDto {
+    const userObj = user.toObject ? user.toObject() : user
+
+    return new UserResponseDto({
+      _id: (userObj._id as any).toString(),
+      username: userObj.username,
+      email: userObj.email,
+      fullName: userObj.fullName,
+      role: userObj.role,
+      phone: userObj.phone,
+      address: userObj.address,
+      borrowedBooks:
+        userObj.borrowedBooks?.map((book: any) => ({
+          bookId: (book.bookId as any).toString(),
+          borrowedDate: book.borrowedDate,
+          dueDate: book.dueDate,
+        })) || [],
+      fines: userObj.fines,
+      isActive: userObj.isActive,
+      createdAt: userObj.createdAt,
+      updatedAt: userObj.updatedAt,
+    })
+  }
+
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     // Kiểm tra username và email đã tồn tại
     const existingUser = await this.userModel
@@ -46,7 +70,7 @@ export class UserService {
     const createdUser = new this.userModel(userData)
     const savedUser = await createdUser.save()
 
-    return new UserResponseDto(savedUser.toObject())
+    return this.transformUserToResponse(savedUser)
   }
 
   async findAll(
@@ -81,7 +105,7 @@ export class UserService {
     ])
 
     return {
-      users: users.map((user) => new UserResponseDto(user.toObject())),
+      users: users.map((user) => this.transformUserToResponse(user)),
       total,
       totalPages: Math.ceil(total / limit),
       currentPage: page,
@@ -98,14 +122,14 @@ export class UserService {
       throw new NotFoundException("Không tìm thấy người dùng")
     }
 
-    return new UserResponseDto(user.toObject())
+    return this.transformUserToResponse(user)
   }
 
-  async findByUsername(username: string): Promise<UserDocument> {
+  async findByUsername(username: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ username }).exec()
   }
 
-  async findByEmail(email: string): Promise<UserDocument> {
+  async findByEmail(email: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ email }).exec()
   }
 
@@ -120,7 +144,7 @@ export class UserService {
       throw new NotFoundException("Không tìm thấy người dùng")
     }
 
-    return new UserResponseDto(updatedUser.toObject())
+    return this.transformUserToResponse(updatedUser)
   }
 
   async delete(id: string): Promise<void> {
