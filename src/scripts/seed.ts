@@ -40,20 +40,20 @@ async function seed() {
       address: "Member Address",
     }
 
-    console.log("🌱 Seeding database...")
+    console.log(" Seeding database...")
 
     await authService.register(adminData)
-    console.log("✅ Admin user created")
+    console.log("Admin user created")
 
     await authService.register(librarianData)
-    console.log("✅ Librarian user created")
+    console.log(" Librarian user created")
 
     await authService.register(memberData)
-    console.log("✅ Member user created")
+    console.log("Member user created")
 
-    console.log("🎉 Database seeded successfully!")
+    console.log(" Database seeded successfully!")
   } catch (error) {
-    console.error("❌ Seeding failed:", error.message)
+    console.error(" Seeding failed:", error.message)
   } finally {
     await app.close()
   }
