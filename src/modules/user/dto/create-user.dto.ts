@@ -36,7 +36,7 @@ export class CreateUserDto {
     example: "Nguyễn Văn A",
   })
   @IsString()
-  @MaxLength(100)
+  @MaxLength(100)  
   fullName: string
 
   @ApiPropertyOptional({
